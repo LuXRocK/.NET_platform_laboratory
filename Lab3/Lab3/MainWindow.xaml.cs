@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Text;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -107,23 +108,68 @@ namespace Lab3
 
         private void FileNew_Click(object senser, RoutedEventArgs e)
         {
-            Console.WriteLine($"New file clicked!");
+            CurrentModel.numOfElemsBox = "";
+            CurrentModel.rangeFromBox = "";
+            CurrentModel.rangeToBox = "";
+            CurrentModel.outputBlock = "";
+            CurrentModel.progressBar1 = 0;
         }
         private void FileLoad_Click(object senser, RoutedEventArgs e)
         {
-            Console.WriteLine($"Load file clicked!");
+            var fileDialog = new Microsoft.Win32.OpenFileDialog();
+            if(fileDialog.ShowDialog() == true)
+            {
+                string data = File.ReadAllText(fileDialog.FileName);
+                string[] subs = data.Split(' ');
+                if(subs.Length >= 3)
+                {
+                    CurrentModel.numOfElemsBox = subs[0];
+                    CurrentModel.rangeFromBox = subs[1];
+                    CurrentModel.rangeToBox = subs[2];
+                }
+                else
+                {
+                    MessageBox.Show("File should contain 3 numbers separated with spacebar");
+                }
+            }
         }
         private void FileSave_Click(object senser, RoutedEventArgs e)
         {
-            Console.WriteLine($"Save file clicked!");
+            var fileDialog = new Microsoft.Win32.SaveFileDialog();
+            if(fileDialog.ShowDialog() == true)
+            {
+                if (CurrentModel.outputBlock.Length > 0)
+                {
+                    File.WriteAllText(fileDialog.FileName, CurrentModel.outputBlock);
+                }
+                else
+                {
+                    MessageBox.Show("No data to save, generate data first.");
+                }
+            }
         }
         private void FileExit_Click(object senser, RoutedEventArgs e)
         {
-            Console.WriteLine($"Exit clicked!");
+            string messageBoxText = "Do you want to exit?";
+            string caption = "Exit";
+            MessageBoxButton button = MessageBoxButton.YesNo;
+            MessageBoxImage icon = MessageBoxImage.Warning;
+            MessageBoxResult result;
+
+            result = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.Yes);
+
+            switch(result)
+            {
+                case MessageBoxResult.Yes:
+                    App.Current.Shutdown();
+                    break;
+                case MessageBoxResult.No:
+                    break;
+            }
         }
         private void FileAbout_Click(object senser, RoutedEventArgs e)
         {
-            Console.WriteLine($"About clicked!");
+            MessageBox.Show("Author: Samuel Ujazda");
         }
         private async void Button_ClickAsync(object sender, RoutedEventArgs e)
         {
